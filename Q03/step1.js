@@ -9,13 +9,4 @@ function solution(N, W) {
     });
     answer = valid ? "Yes" : "No";
     return answer;
-
-    function UpperAndSpaceValid(words) {
-        let result = false;
-        let space = /\s/g;
-        if (words === words.toLowerCase() && !words.match(space)) {
-            result = true;
-        }
-        return result;
-    }
 }
