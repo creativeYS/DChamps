@@ -7,8 +7,8 @@ function solution(N, W) {
 
         return current;
     });
-
-    return valid ? "Yes" : "No";
+    answer = valid ? "Yes" : "No";
+    return answer;
 
     function UpperAndSpaceValid(words) {
         let result = false;
