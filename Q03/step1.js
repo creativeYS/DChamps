@@ -1,12 +1,36 @@
 function solution(N, W) {
-    let answer = 'No';
-    if (N > 100000) return answer;
-    let valid = 0;
-    W.reduce((prev, current) => {
-        (UpperAndSpaceValid(prev) && UpperAndSpaceValid(current)) && (prev.slice(-1).lastIndexOf(current[0]) === -1) ? valid : valid++;
+    let answer = 0;
+    let arr = W.map(value => value[0] + value[value.length - 1]);
 
-        return current;
-    });
-    answer = valid ? "Yes" : "No";
-    return answer;
+    let firstN = arr.shift();
+    let checkIdx = N - 1;
+    check();
+
+    if (checkIdx == 0 && arr.length > 0) check();
+
+
+
+    return checkIdx <= 0 && arr.length == 0 ? "Yes" : "No";
+
+    function check() {
+        for (let i = 0; i < arr.length; i++) {
+            let value = arr[i];
+
+            if (value[0] == firstN[firstN.length - 1]) {
+                firstN = firstN[0] + value[1];
+                arr.splice(i, 1);
+                checkIdx--;
+                i--;
+                continue;
+            }
+            if (value[1] == firstN[0]) {
+                firstN = value[0] + firstN[1];
+                arr.splice(i, 1);
+                checkIdx--;
+                i--;
+                continue;
+            }
+            checkIdx--;
+        }
+    }
 }
