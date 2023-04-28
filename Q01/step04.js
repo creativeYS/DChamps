@@ -33,46 +33,35 @@ const getMinFit = (arr, lan, height) => {
         const total = lan + arr[mid];
         if (total >= height) {
             minIdx = mid;
-            high = mid - 1; // continue binary search on the left half
+            high = mid - 1;
         } else {
-            low = mid + 1; // continue binary search on the right half
+            low = mid + 1;
         }
     }
+    if (minIdx >= 0) ++answer;
     return minIdx;
 }
 
-class Student {
-    constructor(lan) {
-        this.lan = lan;
-    }
+const passIfCan = (lan, height) => {
+    const rest = lan - height;
 
-    passIfCan = (student, height) => {
-        const rest = this.lan - height;
-
-        if (this.lan >= height) {
-            if (rest > 0) {
-                insertIntoSortedArray(addList, rest);
-            }
-            answer++;
-        } else {
-            let minIdx = getMinFit(addList, this.lan, height);
-            if (minIdx >= 0) {
-                addList.splice(minIdx, 1);
-                answer++;
-            }
+    if (lan >= height) {
+        if (rest > 0) {
+            insertIntoSortedArray(addList, rest);
+        }
+        answer++;
+    } else {
+        let minIdx = getMinFit(addList, lan, height);
+        if (minIdx >= 0) {
+            addList.splice(minIdx, 1);
         }
     }
 }
 
 function solution(H, W, D) {
-    const students = D.map(d => new Student(d));
-    for (let i = 0; i < D.length - 1; i++) {
-        students[i].passIfCan(students[i + 1], H);
+    for (lan of D) {
+        passIfCan(lan, H);
     }
-
-    const lastStudent = students[D.length - 1];
-    const idx = getMinFit(addList, lastStudent.lan, H);
-    if (idx >= 0) answer++;
 
     return answer;
 }
