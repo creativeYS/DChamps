@@ -28,9 +28,6 @@ class Student {
     get lan() {
         return this.lan;
     }
-    get add() {
-        return this.add;
-    }
     setAddList = (addList) => {
         this.addList = addList;        
     }
@@ -49,36 +46,52 @@ class Student {
             }
             ret = true;
         } else {
+            // let minIdx = -1;
+            // let minTotal = 0;
+            // addList.sort((a,b)=>a-b)
+            // for (let i = 0; i < addList.length; i++) {
+            //     const total = this.lan + addList[i];
+            //     if (total >= height) {
+            //         if (minIdx < 0 || total < minTotal) {
+            //             minTotal = total;
+            //             minIdx = i;
+            //             break;
+            //         }
+            //     }
+            // }
             let minIdx = -1;
-            let minTotal = 0;
-            for (let i = 0; i < addList.length; i++) {
-                const total = this.lan + addList[i];
+            addList.sort((a, b) => a - b); // sort the addList array
+
+            let low = 0, high = addList.length - 1;
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2);
+                const total = this.lan + addList[mid];
                 if (total >= height) {
-                    if (minIdx < 0 || total < minTotal) {
-                        minTotal = total;
-                        minIdx = i;                        
-                    }
+                    minIdx = mid;
+                    high = mid - 1; // continue binary search on the left half
+                } else {
+                    low = mid + 1; // continue binary search on the right half
                 }
             }
+
             if (minIdx >= 0) {
                 this.add = addList[minIdx];
                 addList = addList.filter((v, idx) => idx != minIdx);
                 ret = true;
-            } else {
-                this.lan = 0;
-                addList.push(this.lan);                
+            } else if (this.lan > 0) {
+                // 못하는 자기 자신을 넘김
+                // addList.push(this.lan);   
+                // this.lan = 0;             
             }
         }
 
-        //console.log(addList);
         student.setAddList(addList);
         return ret;
     }
 
     isEnough = (height) => {
-        if ((this.lan + this.add) >= height) return true;
-
-        for (let i = 0; i < this.addList.length; i++) {
+        if ((this.lan + this.add) >= height) return true;        
+        for (let i = this.addList.length - 1; i >= 0; i--) {
             const total = this.lan + this.addList[i];
             if (total >= height) return true;
         }
@@ -90,7 +103,7 @@ class Student {
 function solution(H, W, D) {
     let desk = new Desk(H, W);
     const students = D.map(d => new Student(d));
-    var answer = 0
+    let answer = 0
     for (let i = 0; i < D.length - 1; i++) {
         if (students[i].passIfCan(students[i + 1], desk.height)) {
             answer++;
