@@ -1,115 +1,78 @@
-class Desk {
-    h;
-    w;
+let answer = 0;
+let addList = []
 
-    constructor(h, w) {
-        this.h = h;
-        this.w = w;
+const insertIntoSortedArray = (arr, newItem) => {
+    const index = binarySearch(arr, newItem);
+    arr.splice(index, 0, newItem);
+    return arr;
+};
+
+const binarySearch = (arr, target) => {
+    let left = 0;
+    let right = arr.length - 1;
+
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        if (arr[mid] === target) {
+            return mid;
+        } else if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
     }
 
-    get height() {
-        return this.h;
+    return left;
+};
+
+const getMinFit = (arr, lan, height) => {
+    let minIdx = -1;
+    let low = 0, high = arr.length - 1;
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        const total = lan + arr[mid];
+        if (total >= height) {
+            minIdx = mid;
+            high = mid - 1; // continue binary search on the left half
+        } else {
+            low = mid + 1; // continue binary search on the right half
+        }
     }
-    get width() {
-        return this.w;
-    }
+    return minIdx;
 }
-class Student {
-    lan;
-    add;
-    addList;
 
+class Student {
     constructor(lan) {
         this.lan = lan;
-        this.add = 0;
-        this.addList = [];
-    }
-
-    get lan() {
-        return this.lan;
-    }
-    setAddList = (addList) => {
-        this.addList = addList;        
     }
 
     passIfCan = (student, height) => {
         const rest = this.lan - height;
-        let ret = false;
-
-        let addList = this.addList;
-        this.addList = [];
 
         if (this.lan >= height) {
             if (rest > 0) {
-                addList.push(rest)
-                this.lan -= rest; 
+                insertIntoSortedArray(addList, rest);
             }
-            ret = true;
+            answer++;
         } else {
-            // let minIdx = -1;
-            // let minTotal = 0;
-            // addList.sort((a,b)=>a-b)
-            // for (let i = 0; i < addList.length; i++) {
-            //     const total = this.lan + addList[i];
-            //     if (total >= height) {
-            //         if (minIdx < 0 || total < minTotal) {
-            //             minTotal = total;
-            //             minIdx = i;
-            //             break;
-            //         }
-            //     }
-            // }
-            let minIdx = -1;
-            addList.sort((a, b) => a - b); // sort the addList array
-
-            let low = 0, high = addList.length - 1;
-            while (low <= high) {
-                const mid = Math.floor((low + high) / 2);
-                const total = this.lan + addList[mid];
-                if (total >= height) {
-                    minIdx = mid;
-                    high = mid - 1; // continue binary search on the left half
-                } else {
-                    low = mid + 1; // continue binary search on the right half
-                }
-            }
-
+            let minIdx = getMinFit(addList, this.lan, height);
             if (minIdx >= 0) {
-                this.add = addList[minIdx];
-                addList = addList.filter((v, idx) => idx != minIdx);
-                ret = true;
-            } else if (this.lan > 0) {
-                // 못하는 자기 자신을 넘김
-                // addList.push(this.lan);   
-                // this.lan = 0;             
+                addList.splice(minIdx, 1);
+                answer++;
             }
         }
-
-        student.setAddList(addList);
-        return ret;
-    }
-
-    isEnough = (height) => {
-        if ((this.lan + this.add) >= height) return true;        
-        for (let i = this.addList.length - 1; i >= 0; i--) {
-            const total = this.lan + this.addList[i];
-            if (total >= height) return true;
-        }
-
-        return false;
     }
 }
 
 function solution(H, W, D) {
-    let desk = new Desk(H, W);
     const students = D.map(d => new Student(d));
-    let answer = 0
     for (let i = 0; i < D.length - 1; i++) {
-        if (students[i].passIfCan(students[i + 1], desk.height)) {
-            answer++;
-        }
+        students[i].passIfCan(students[i + 1], H);
     }
-    if (students[D.length - 1].isEnough(desk.height)) answer++;
+
+    const lastStudent = students[D.length - 1];
+    const idx = getMinFit(addList, lastStudent.lan, H);
+    if (idx >= 0) answer++;
 
     return answer;
 }
