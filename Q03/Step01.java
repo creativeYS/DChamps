@@ -1,5 +1,10 @@
 import java.util.*;
 
+/*
+    수정해야합니다..
+    반례 : everyone eve 에 대해 No 출력..
+
+ */
 class Solution {
     static List<Integer>[] graph;
     static int[] indegree, outdegree;
